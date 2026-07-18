@@ -356,18 +356,6 @@ function buildReadme(submission) {
       `The full problem statement is available on [LeetCode](${submission.problemUrl}).`,
   );
 
-  if (submission.runtime || submission.memory) {
-    lines.push('', '## Submission', '');
-
-    if (submission.runtime) {
-      lines.push(`- Runtime: ${submission.runtime}`);
-    }
-
-    if (submission.memory) {
-      lines.push(`- Memory: ${submission.memory}`);
-    }
-  }
-
   return `${lines.join('\n')}\n`;
 }
 
