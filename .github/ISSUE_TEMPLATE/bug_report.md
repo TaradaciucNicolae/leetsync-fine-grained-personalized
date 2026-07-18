@@ -8,7 +8,13 @@ assignees: ""
 
 ## Summary
 
-Describe the problem clearly.
+Describe the problem.
+
+## Sync Mode
+
+- Automatic Submit -> Accepted sync
+- Manual historical Accepted sync
+- Configuration, installation, or other
 
 ## Steps to Reproduce
 
@@ -28,9 +34,10 @@ What happened instead?
 
 - Firefox version:
 - Extension version:
-- LeetCode page URL pattern, without private query parameters:
+- LeetCode problem URL pattern, without private query parameters:
+- GitHub destination type, without private repository details:
 
 ## Logs or Screenshots
 
-Do not include GitHub tokens, cookies, LeetCode session data, private repository
-URLs, or any other secrets.
+Remove GitHub tokens, cookies, LeetCode session data, private repository URLs,
+browser profile paths, and other secrets before posting.

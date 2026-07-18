@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "LeetSync Fine-Grained - Personalized",
-  "description": "Privacy-first Firefox extension for syncing accepted LeetCode solutions to one GitHub repository with a Fine-Grained PAT.",
+  "description": "Firefox extension for syncing accepted LeetCode solutions to one configured GitHub repository with a Fine-Grained PAT.",
   "version": "0.1.0",
   "author": "Derived from LeetHub by Qasim Wani; independently modified",
   "browser_specific_settings": {

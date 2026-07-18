@@ -2,7 +2,7 @@
   "name": "leetsync-fine-grained-personalized",
   "version": "0.1.0",
   "private": true,
-  "description": "Privacy-first Firefox extension for automatically syncing accepted LeetCode solutions to a single GitHub repository using a Fine-Grained Personal Access Token.",
+  "description": "Firefox extension for syncing accepted LeetCode solutions to one configured GitHub repository with a Fine-Grained PAT.",
   "scripts": {
     "setup": "npm i",
     "format": "prettier --write **/*.{js,jsx,ts,tsx,css,html}",

@@ -10,15 +10,18 @@ assignees: ""
 
 What problem would this solve?
 
-## Proposed Solution
+## Proposed Behavior
 
-Describe the behavior you would like.
+Describe the change.
 
-## Alternatives Considered
+## Security and Privacy Impact
 
-Describe any alternatives you considered.
+Would this require any of the following?
 
-## Security and Privacy Notes
+- New browser or host permissions
+- New network origins
+- Changes to PAT storage or GitHub authentication
+- Changes to LeetCode page/content-script messaging
+- Analytics, telemetry, or a backend
 
-Would this require new browser permissions, new network origins, or changes to
-credential storage? Do not include secrets.
+Do not include secrets.

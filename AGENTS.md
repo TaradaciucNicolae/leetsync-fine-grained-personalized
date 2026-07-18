@@ -1,35 +1,44 @@
 # Agent Development Rules
 
-These rules are for Codex and other AI/development agents working on this
+These rules apply to Codex and other AI/development agents working on this
 repository.
 
-## Non-Negotiable Security Rules
+## Security Invariants
 
-- Never introduce broad GitHub OAuth `repo` scope.
-- Never introduce classic GitHub Personal Access Token authentication.
-- Never send the GitHub Fine-Grained PAT outside `https://api.github.com`.
-- Never expose the PAT to LeetCode page scripts.
-- Never expose the PAT to the LeetCode content script or page bridge.
-- Never use `storage.sync` for credentials.
-- Never use `window.localStorage`, cookies, or a backend for GitHub credentials.
-- Never commit credentials, debug storage dumps, browser profiles, cookies, or
-  real user tokens.
-- Never add analytics or telemetry without an explicit maintainer decision.
-- Keep Firefox permissions minimal.
-- Document every new host permission and why it is required.
-- Manual and automatic sync must reuse the same GitHub upload pipeline.
+- Do not add broad GitHub OAuth `repo` scope or a GitHub OAuth flow.
+- Do not accept classic GitHub Personal Access Tokens.
+- Do not send the GitHub Fine-Grained PAT outside `https://api.github.com`.
+- Do not expose the PAT to LeetCode content scripts, injected page scripts, or
+  page bridge code.
+- Do not store credentials in `storage.sync`, `window.localStorage`, cookies, or
+  a backend.
+- Do not commit credentials, browser storage dumps, cookies, browser profiles,
+  logs containing secrets, or real user tokens.
+- Keep host permissions minimal and document every new permission.
+- Do not add analytics or telemetry without an explicit maintainer decision.
+- Keep manual historical Accepted sync and automatic Submit -> Accepted sync on
+  the same GitHub upload pipeline.
 - Preserve the MIT license and upstream LeetHub attribution.
-- Changes to authentication, networking, browser permissions, credential
-  storage, or repository destination logic require a security audit.
 
-## Architecture Expectations
+## Review Triggers
 
-- Popup UI may collect configuration and display progress.
+Perform a security review before releasing changes to:
+
+- Authentication or token validation
+- GitHub API request construction
+- LeetCode data extraction or page bridge messaging
+- Browser permissions or host permissions
+- Credential storage or migration
+- Repository owner, repository name, or upload path handling
+
+## Architecture Boundaries
+
+- Popup UI collects configuration and displays status.
 - Background script owns GitHub configuration, PAT access, GitHub REST requests,
   and file create/update logic.
-- LeetCode content script may retrieve LeetCode metadata and accepted submission
-  data, but must not receive the GitHub PAT.
-- The page bridge may inspect LeetCode page/editor state, but must not receive
-  the GitHub PAT.
-- GitHub upload destinations must always be derived from saved extension
-  configuration, never from LeetCode page content.
+- LeetCode content script retrieves LeetCode metadata and accepted submission
+  data, but must not receive the PAT.
+- Page bridge may inspect LeetCode page/editor state, but must not receive the
+  PAT.
+- GitHub upload destinations must be derived from saved extension configuration,
+  not from LeetCode page content.
