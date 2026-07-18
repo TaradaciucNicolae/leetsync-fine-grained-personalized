@@ -144,14 +144,27 @@ Generated solution READMEs currently include:
 - Topic tags when available
 - Full normalized LeetCode problem statement when available
 - Examples, explanations, constraints, and notes contained in the problem content
-- Accepted runtime/memory stats when available
 
 The full problem content is generated from the normalized LeetCode HTML fetched
 by the extension and keeps a direct link back to the original LeetCode problem.
+Runtime and memory statistics are used for GitHub commit messages when
+available, but are not written into generated problem READMEs.
 
 ## Privacy
 
 See [PRIVACY.md](PRIVACY.md).
+
+For Firefox's data collection declaration, this extension requires:
+
+- `authenticationInfo` for the GitHub username/repository configuration and
+  Fine-Grained PAT used with `https://api.github.com`
+- `browsingActivity` for the current LeetCode problem URL that may be included
+  in generated repository content
+- `websiteContent` for LeetCode problem metadata and accepted solution source
+  code uploaded to the user's configured GitHub repository
+
+The project does not use analytics, telemetry, advertising, data sale, unrelated
+third-party transmission, or a project-operated external backend.
 
 ## Security
 

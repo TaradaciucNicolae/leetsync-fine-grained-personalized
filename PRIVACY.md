@@ -2,7 +2,8 @@
 
 LeetSync Fine-Grained - Personalized is a local Firefox extension. It does not
 use analytics, telemetry, advertising, tracking scripts, or a project-operated
-external backend.
+external backend. It does transmit the data needed for its sync feature to
+LeetCode and GitHub as described below.
 
 ## Data Stored Locally
 
@@ -20,6 +21,23 @@ that value to `leetsync_config.token`.
 
 The token is not stored in `storage.sync`, `window.localStorage`, cookies, or a
 remote service.
+
+## Firefox Data Collection Declaration
+
+The Firefox manifest declares these required data categories:
+
+- `authenticationInfo`: the configured GitHub username/repository and
+  Fine-Grained PAT are used to authenticate GitHub API requests. The PAT is
+  stored locally in Firefox extension storage and is sent only to
+  `https://api.github.com`.
+- `browsingActivity`: the extension processes the currently open LeetCode
+  problem URL. That LeetCode URL may be included in the generated README
+  uploaded to the user's configured GitHub repository. The extension does not
+  maintain a general browsing history.
+- `websiteContent`: the extension processes LeetCode problem metadata and the
+  user's accepted solution source code. This content is transmitted only to the
+  user's configured GitHub repository through `https://api.github.com` as part
+  of synchronization.
 
 ## Network Requests
 
@@ -44,9 +62,9 @@ API.
 Generated READMEs include metadata, a LeetCode reference link, and the full
 normalized problem statement when LeetCode provides it to the extension.
 
-## Data Not Collected
+## Data Not Used Or Sent
 
-This project does not collect or transmit:
+This project does not collect, use, sell, or transmit:
 
 - analytics events
 - telemetry
@@ -54,6 +72,8 @@ This project does not collect or transmit:
 - browsing history unrelated to LeetCode problem pages
 - GitHub tokens to any project-operated server
 - LeetCode cookies or session data to GitHub
+- user data for sale
+- user data to unrelated third parties
 
 Do not include tokens, cookies, private repository URLs, or LeetCode session
 details in bug reports.
