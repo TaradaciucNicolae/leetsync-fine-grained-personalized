@@ -50,6 +50,36 @@ const LANGUAGE_EXTENSIONS = {
   typescript: '.ts',
 };
 
+const LANGUAGE_NAMES = {
+  bash: 'Bash',
+  c: 'C',
+  cpp: 'C++',
+  csharp: 'C#',
+  dart: 'Dart',
+  elixir: 'Elixir',
+  erlang: 'Erlang',
+  go: 'Go',
+  golang: 'Go',
+  java: 'Java',
+  javascript: 'JavaScript',
+  js: 'JavaScript',
+  kotlin: 'Kotlin',
+  mysql: 'MySQL',
+  mssql: 'MS SQL Server',
+  oracle: 'Oracle',
+  oraclesql: 'Oracle',
+  pandas: 'Pandas',
+  php: 'PHP',
+  python: 'Python',
+  python3: 'Python',
+  racket: 'Racket',
+  ruby: 'Ruby',
+  rust: 'Rust',
+  scala: 'Scala',
+  swift: 'Swift',
+  typescript: 'TypeScript',
+};
+
 function isValidOwner(owner) {
   return /^[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})$/.test(owner);
 }
@@ -159,7 +189,9 @@ function cleanSubmission(input) {
     problemTitle: title,
     problemUrl: input.problemUrl || `https://leetcode.com/problems/${problemSlug}/`,
     runtime: String(input.runtime || '').trim(),
+    runtimePercentile: input.runtimePercentile,
     memory: String(input.memory || '').trim(),
+    memoryPercentile: input.memoryPercentile,
     tags: Array.isArray(input.tags) ? input.tags.filter(Boolean).map(String) : [],
   };
 }
@@ -207,6 +239,84 @@ function extensionForLanguage(language, langSlug) {
   }
 
   throw new Error(`Unsupported or unknown LeetCode language: ${language || langSlug}`);
+}
+
+function languageKey(value) {
+  const raw = String(value || '').trim().toLowerCase();
+
+  if (raw === 'c++') {
+    return 'cpp';
+  }
+
+  if (raw === 'c#') {
+    return 'csharp';
+  }
+
+  return raw.replace(/[^a-z0-9]+/g, '');
+}
+
+function normalizeLanguageName(language, langSlug) {
+  const candidates = [langSlug, language];
+
+  for (const candidate of candidates) {
+    const key = languageKey(candidate);
+
+    if (LANGUAGE_NAMES[key]) {
+      return LANGUAGE_NAMES[key];
+    }
+  }
+
+  return String(language || langSlug || '').trim();
+}
+
+function cleanStatValue(value) {
+  return value === null || value === undefined ? '' : String(value).trim();
+}
+
+function formatPercentile(value) {
+  if (value === null || value === undefined || value === '') {
+    return '';
+  }
+
+  if (typeof value === 'number') {
+    return Number.isFinite(value) ? `${value.toFixed(2)}%` : '';
+  }
+
+  const match = String(value).match(/-?\d+(?:\.\d+)?/);
+
+  if (!match) {
+    return '';
+  }
+
+  const numeric = Number(match[0]);
+
+  return Number.isFinite(numeric) ? `${numeric.toFixed(2)}%` : '';
+}
+
+function formatStat(name, value, percentile) {
+  const cleanValue = cleanStatValue(value);
+
+  if (!cleanValue) {
+    return '';
+  }
+
+  const cleanPercentile = formatPercentile(percentile);
+
+  return cleanPercentile
+    ? `${name}: ${cleanValue} (${cleanPercentile})`
+    : `${name}: ${cleanValue}`;
+}
+
+function buildCommitMessage(submission) {
+  const stats = [
+    formatStat('Runtime', submission.runtime, submission.runtimePercentile),
+    formatStat('Memory', submission.memory, submission.memoryPercentile),
+  ].filter(Boolean);
+  const performance = stats.join(', ');
+  const language = normalizeLanguageName(submission.language, submission.langSlug);
+  const prefix = [performance, language].filter(Boolean).join(' - ');
+
+  return prefix ? `${prefix} - LeetHub Auto Commit` : 'LeetHub Auto Commit';
 }
 
 function encodeGitHubPath(path) {
@@ -448,21 +558,19 @@ async function uploadSubmission(inputSubmission) {
   const readmePath = `${directory}/README.md`;
   const solutionPath = `${directory}/${solutionFilename}`;
   const readme = buildReadme(submission);
-  const shortTitle = submission.problemNumber
-    ? `${submission.problemNumber}. ${submission.problemTitle}`
-    : submission.problemTitle;
+  const commitMessage = buildCommitMessage(submission);
 
   const readmeResult = await putRepositoryFile(
     config,
     readmePath,
     readme,
-    `Sync README for ${shortTitle}`,
+    commitMessage,
   );
   const solutionResult = await putRepositoryFile(
     config,
     solutionPath,
     `${submission.code}\n`,
-    `Sync ${solutionFilename} for ${shortTitle}`,
+    commitMessage,
   );
 
   await updateStats(submission, directory, solutionResult.action);

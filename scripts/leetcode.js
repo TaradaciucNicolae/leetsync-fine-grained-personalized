@@ -231,12 +231,24 @@ function normalizeSubmissionDetailPayload(detail, source) {
       detail.status_memory,
       detail.memory,
     ),
+    memoryPercentile: firstNonEmpty(
+      detail.memoryPercentile,
+      detail.memory_percentile,
+      detail.memoryBeats,
+      detail.memory_beats,
+    ),
     question,
     runtime: firstNonEmpty(
       detail.runtimeDisplay,
       detail.runtime_display,
       detail.status_runtime,
       detail.runtime,
+    ),
+    runtimePercentile: firstNonEmpty(
+      detail.runtimePercentile,
+      detail.runtime_percentile,
+      detail.runtimeBeats,
+      detail.runtime_beats,
     ),
     source,
     statusCode: firstNonEmpty(detail.statusCode, detail.status_code),
@@ -274,8 +286,10 @@ async function trySubmissionDetailsGraphQL(submissionId) {
         code
         runtime
         runtimeDisplay
+        runtimePercentile
         memory
         memoryDisplay
+        memoryPercentile
         statusCode
         statusDisplay
         lang {
@@ -738,10 +752,20 @@ async function getLatestAcceptedSubmissionDetail(problemSlug) {
       submissionDetails.memory,
       acceptedRecord.memory,
     ),
+    memoryPercentile: firstNonEmpty(
+      submissionDetails.memoryPercentile,
+      acceptedRecord.memoryPercentile,
+      acceptedRecord.memory_percentile,
+    ),
     runtime: firstNonEmpty(
       submissionDetails.runtimeDisplay,
       submissionDetails.runtime,
       acceptedRecord.runtime,
+    ),
+    runtimePercentile: firstNonEmpty(
+      submissionDetails.runtimePercentile,
+      acceptedRecord.runtimePercentile,
+      acceptedRecord.runtime_percentile,
     ),
     submissionDetails,
     submissionId,
@@ -911,7 +935,14 @@ function parseTitleAndNumber(value) {
 }
 
 function firstNonEmpty(...values) {
-  return values.find((value) => String(value || '').trim()) || '';
+  const value = values.find(
+    (candidate) =>
+      candidate !== null &&
+      candidate !== undefined &&
+      String(candidate).trim() !== '',
+  );
+
+  return value === undefined ? '' : value;
 }
 
 function extractProblemFromDom(problemSlug) {
@@ -1191,9 +1222,21 @@ async function extractSubmission(acceptedDetail = {}, options = {}) {
       acceptedDetail.memory,
       submissionDetails && (submissionDetails.memoryDisplay || submissionDetails.memory),
     ),
+    memoryPercentile: firstNonEmpty(
+      acceptedDetail.memoryPercentile,
+      acceptedDetail.memory_percentile,
+      submissionDetails && submissionDetails.memoryPercentile,
+      submissionDetails && submissionDetails.memory_percentile,
+    ),
     runtime: firstNonEmpty(
       acceptedDetail.runtime,
       submissionDetails && (submissionDetails.runtimeDisplay || submissionDetails.runtime),
+    ),
+    runtimePercentile: firstNonEmpty(
+      acceptedDetail.runtimePercentile,
+      acceptedDetail.runtime_percentile,
+      submissionDetails && submissionDetails.runtimePercentile,
+      submissionDetails && submissionDetails.runtime_percentile,
     ),
   };
 }

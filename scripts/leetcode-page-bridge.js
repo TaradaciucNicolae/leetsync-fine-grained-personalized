@@ -18,6 +18,17 @@
     return String(value || '').trim().toLowerCase() === 'accepted';
   }
 
+  function firstNonEmpty(...values) {
+    const value = values.find(
+      (candidate) =>
+        candidate !== null &&
+        candidate !== undefined &&
+        String(candidate).trim() !== '',
+    );
+
+    return value === undefined ? '' : value;
+  }
+
   function acceptedDetailFromObject(value) {
     if (!value || typeof value !== 'object') {
       return null;
@@ -40,7 +51,19 @@
       lang: value.lang || value.pretty_lang || value.prettyLang || value.language || '',
       langSlug: value.langSlug || value.lang_slug || '',
       memory: value.status_memory || value.memory || value.memoryDisplay || '',
+      memoryPercentile: firstNonEmpty(
+        value.memoryPercentile,
+        value.memory_percentile,
+        value.memoryBeats,
+        value.memory_beats,
+      ),
       runtime: value.status_runtime || value.runtime || value.runtimeDisplay || '',
+      runtimePercentile: firstNonEmpty(
+        value.runtimePercentile,
+        value.runtime_percentile,
+        value.runtimeBeats,
+        value.runtime_beats,
+      ),
       submissionId: value.submission_id || value.submissionId || value.id || '',
     };
   }
