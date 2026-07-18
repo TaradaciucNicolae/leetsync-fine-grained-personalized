@@ -1,29 +1,36 @@
 ---
 name: Bug report
-about: Create a report to help us improve LeetHub
-title: ''
+about: Report a reproducible problem with LeetSync Fine-Grained - Personalized
+title: "[Bug]: "
 labels: bug
-assignees: QasimWani
-
+assignees: ""
 ---
 
-## Please review previous closed issues before filling out a new one! Duplicate issues will be closed without comment.
+## Summary
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+Describe the problem clearly.
 
-**To Reproduce**
-Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
+## Steps to Reproduce
 
-**Expected behavior**
-A clear and concise description of what you expected to happen.
+1. Open ...
+2. Click ...
+3. Observe ...
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
+## Expected Behavior
 
-**Additional context**
-Add any other context about the problem here.
+What did you expect to happen?
+
+## Actual Behavior
+
+What happened instead?
+
+## Environment
+
+- Firefox version:
+- Extension version:
+- LeetCode page URL pattern, without private query parameters:
+
+## Logs or Screenshots
+
+Do not include GitHub tokens, cookies, LeetCode session data, private repository
+URLs, or any other secrets.

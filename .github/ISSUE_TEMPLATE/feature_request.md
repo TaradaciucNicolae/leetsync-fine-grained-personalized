@@ -1,22 +1,24 @@
 ---
 name: Feature request
-about: What would enhance your LeetHub experience?
-title: ''
-labels: ''
-assignees: ''
-
+about: Suggest an improvement for LeetSync Fine-Grained - Personalized
+title: "[Feature]: "
+labels: enhancement
+assignees: ""
 ---
 
-## Please review previous closed issues before filling out a new one! Duplicate issues will be closed without comment.
+## Problem
 
-**Is your feature request related to a problem? Please describe.**
-A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
+What problem would this solve?
 
-**Describe the solution you'd like**
-A clear and concise description of what you want to happen.
+## Proposed Solution
 
-**Describe alternatives you've considered**
-A clear and concise description of any alternative solutions or features you've considered.
+Describe the behavior you would like.
 
-**Additional context**
-Add any other context or screenshots about the feature request here.
+## Alternatives Considered
+
+Describe any alternatives you considered.
+
+## Security and Privacy Notes
+
+Would this require new browser permissions, new network origins, or changes to
+credential storage? Do not include secrets.
