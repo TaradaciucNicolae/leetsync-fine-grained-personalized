@@ -15,10 +15,17 @@
           "websiteContent"
         ]
       }
+    },
+    "gecko_android": {
+      "strict_min_version": "142.0"
     }
   },
   "browser_action": {
-    "default_icon": "assets/thumbnail.png",
+    "default_icon": {
+      "16": "assets/icon-16.png",
+      "48": "assets/icon-48.png",
+      "128": "assets/icon-128.png"
+    },
     "default_popup": "popup.html"
   },
   "options_ui": {
@@ -26,9 +33,9 @@
     "open_in_tab": true
   },
   "icons": {
-    "16": "assets/thumbnail.png",
-    "48": "assets/thumbnail.png",
-    "128": "assets/thumbnail.png"
+    "16": "assets/icon-16.png",
+    "48": "assets/icon-48.png",
+    "128": "assets/icon-128.png"
   },
   "background": {
     "scripts": ["scripts/background.js"],
