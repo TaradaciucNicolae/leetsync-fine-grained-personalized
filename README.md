@@ -141,13 +141,12 @@ Generated solution READMEs currently include:
 - Difficulty
 - Original LeetCode URL
 - Topic tags when available
+- Full normalized LeetCode problem statement when available
+- Examples, explanations, constraints, and notes contained in the problem content
 - Accepted runtime/memory stats when available
-- A LeetCode reference note
 
-For public repository safety, generated READMEs do **not** currently copy the
-full LeetCode problem statement, examples, or constraints. The content script
-still retrieves problem metadata from LeetCode so the extension can identify and
-label the solution correctly.
+The full problem content is generated from the normalized LeetCode HTML fetched
+by the extension and keeps a direct link back to the original LeetCode problem.
 
 ## Privacy
 

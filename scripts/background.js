@@ -228,26 +228,35 @@ function buildReadme(submission) {
   const titlePrefix = submission.problemNumber
     ? `${submission.problemNumber}. `
     : '';
+  const description = String(submission.descriptionMarkdown || '').trim();
   const lines = [
     `# ${titlePrefix}${submission.problemTitle}`,
     '',
     submission.difficulty ? `**Difficulty:** ${submission.difficulty}` : '',
-    `**LeetCode:** ${submission.problemUrl}`,
+    `**LeetCode:** [${submission.problemUrl}](${submission.problemUrl})`,
   ].filter(Boolean);
 
   if (submission.tags.length > 0) {
     lines.push(`**Tags:** ${submission.tags.join(', ')}`);
   }
 
-  if (submission.runtime || submission.memory) {
-    const stats = [submission.runtime, submission.memory].filter(Boolean).join(', ');
-    lines.push(`**Accepted stats:** ${stats}`);
-  }
-
-  lines.push('', '## LeetCode Reference', '');
+  lines.push('', '## Problem', '');
   lines.push(
-    'The full problem statement, examples, and constraints are available on LeetCode.',
+    description ||
+      `The full problem statement is available on [LeetCode](${submission.problemUrl}).`,
   );
+
+  if (submission.runtime || submission.memory) {
+    lines.push('', '## Submission', '');
+
+    if (submission.runtime) {
+      lines.push(`- Runtime: ${submission.runtime}`);
+    }
+
+    if (submission.memory) {
+      lines.push(`- Memory: ${submission.memory}`);
+    }
+  }
 
   return `${lines.join('\n')}\n`;
 }

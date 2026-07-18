@@ -41,8 +41,8 @@ When syncing, the extension sends the generated README content and accepted
 solution source code to the configured GitHub repository through the GitHub REST
 API.
 
-Generated READMEs include metadata and a LeetCode reference link. They do not
-currently copy full LeetCode problem statements.
+Generated READMEs include metadata, a LeetCode reference link, and the full
+normalized problem statement when LeetCode provides it to the extension.
 
 ## Data Not Collected
 
