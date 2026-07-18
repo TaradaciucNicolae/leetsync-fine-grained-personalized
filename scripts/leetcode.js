@@ -1,10 +1,10 @@
 const extensionApi = typeof browser !== 'undefined' ? browser : chrome;
 
-const ACCEPTED_EVENT = 'LEETSYNC_FINE_GRAINED_ACCEPTED';
+const SUBMISSION_CREATED_EVENT = 'LEETSYNC_FINE_GRAINED_SUBMISSION_CREATED';
+const SUBMISSION_RESULT_EVENT = 'LEETSYNC_FINE_GRAINED_SUBMISSION_RESULT';
 const EDITOR_REQUEST_EVENT = 'LEETSYNC_FINE_GRAINED_EDITOR_REQUEST';
 const EDITOR_RESPONSE_EVENT = 'LEETSYNC_FINE_GRAINED_EDITOR_RESPONSE';
-const PAGE_STATUS_ID = 'leetsync-fine-grained-status';
-const RECENT_SUBMIT_WINDOW_MS = 180000;
+const SUBMIT_PENDING_TIMEOUT_MS = 180000;
 
 const LANGUAGE_ALIASES = {
   bash: 'Bash',
@@ -40,10 +40,12 @@ const KNOWN_LANGUAGE_LABELS = new Set(Object.values(LANGUAGE_ALIASES));
 const MANUAL_SUBMISSION_PAGE_LIMIT = 20;
 const MANUAL_SUBMISSION_MAX_PAGES = 10;
 
-let lastSubmitAt = 0;
 let lastSyncedFingerprint = '';
 let autoSyncTimer = null;
+let pendingSubmit = null;
+let pendingSubmitTimer = null;
 let syncInFlight = false;
+const syncedAutoSubmissionIds = new Set();
 
 function sanitizeDiagnostic(value) {
   return String(value || '')
@@ -74,10 +76,6 @@ function installPageBridge() {
 function getProblemSlug() {
   const match = window.location.pathname.match(/^\/problems\/([^/]+)/);
   return match ? match[1] : '';
-}
-
-function isProblemPage() {
-  return Boolean(getProblemSlug());
 }
 
 async function fetchLeetCodeGraphQL(operationName, query, variables) {
@@ -1259,44 +1257,6 @@ function submissionFingerprint(submission) {
   ].join(':');
 }
 
-function showPageStatus(message, tone = 'pending') {
-  let element = document.getElementById(PAGE_STATUS_ID);
-
-  if (!element) {
-    element = document.createElement('div');
-    element.id = PAGE_STATUS_ID;
-    element.style.position = 'fixed';
-    element.style.right = '16px';
-    element.style.bottom = '16px';
-    element.style.zIndex = '2147483647';
-    element.style.maxWidth = '340px';
-    element.style.borderRadius = '8px';
-    element.style.boxShadow = '0 12px 32px rgba(0, 0, 0, 0.22)';
-    element.style.font = '13px/1.4 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-    element.style.padding = '10px 12px';
-    document.documentElement.appendChild(element);
-  }
-
-  const colors = {
-    error: ['#fff1f0', '#b42318', '#fda29b'],
-    ok: ['#ecfdf3', '#067647', '#75e0a7'],
-    pending: ['#fff7ed', '#9a3412', '#fdba74'],
-  };
-  const [background, color, border] = colors[tone] || colors.pending;
-
-  element.textContent = message;
-  element.style.background = background;
-  element.style.border = `1px solid ${border}`;
-  element.style.color = color;
-
-  if (tone === 'ok') {
-    window.clearTimeout(element.__leetsyncDismissTimer);
-    element.__leetsyncDismissTimer = window.setTimeout(() => {
-      element.remove();
-    }, 8000);
-  }
-}
-
 function emitManualSyncProgress(requestId, message) {
   if (!requestId) {
     return;
@@ -1340,6 +1300,195 @@ function formatManualSuccessMessage(submission) {
   return `Successfully synced ${submission.problemTitle}`;
 }
 
+function clearPendingSubmit() {
+  window.clearTimeout(pendingSubmitTimer);
+  pendingSubmitTimer = null;
+  pendingSubmit = null;
+}
+
+function startPendingSubmit() {
+  const problemSlug = getProblemSlug();
+
+  if (!problemSlug) {
+    return;
+  }
+
+  clearPendingSubmit();
+  pendingSubmit = {
+    problemSlug,
+    startedAt: Date.now(),
+    submissionId: '',
+    syncStarted: false,
+  };
+  pendingSubmitTimer = window.setTimeout(
+    clearPendingSubmit,
+    SUBMIT_PENDING_TIMEOUT_MS,
+  );
+}
+
+function detailProblemSlug(detail) {
+  return String(detail.problemSlug || detail.titleSlug || detail.title_slug || '').trim();
+}
+
+function detailSubmissionId(detail) {
+  return normalizeSubmissionId(
+    firstNonEmpty(detail.submissionId, detail.submission_id, detail.id),
+  );
+}
+
+function pendingSubmitMatches(detail = {}) {
+  if (!pendingSubmit) {
+    return false;
+  }
+
+  if (Date.now() - pendingSubmit.startedAt > SUBMIT_PENDING_TIMEOUT_MS) {
+    clearPendingSubmit();
+    return false;
+  }
+
+  const currentSlug = getProblemSlug();
+  if (currentSlug && currentSlug !== pendingSubmit.problemSlug) {
+    clearPendingSubmit();
+    return false;
+  }
+
+  const resultSlug = detailProblemSlug(detail);
+  return !resultSlug || resultSlug === pendingSubmit.problemSlug;
+}
+
+function isPendingStatusText(value) {
+  const text = String(value || '').trim().toLowerCase();
+
+  return (
+    !text ||
+    text === 'pending' ||
+    text === 'started' ||
+    text === 'judging' ||
+    text === 'running' ||
+    text === 'queued' ||
+    text === 'compiling'
+  );
+}
+
+function isAcceptedResult(detail) {
+  const statusValues = [
+    detail.status,
+    detail.statusDisplay,
+    detail.status_display,
+    detail.statusMsg,
+    detail.status_msg,
+  ];
+  const statusCodes = [detail.statusCode, detail.status_code];
+
+  return (
+    detail.accepted === true ||
+    statusValues.some(statusValueIsAccepted) ||
+    statusCodes.some(acceptedStatusCode)
+  );
+}
+
+function isTerminalResult(detail) {
+  if (isAcceptedResult(detail)) {
+    return true;
+  }
+
+  const statusValues = [
+    detail.status,
+    detail.statusDisplay,
+    detail.status_display,
+    detail.statusMsg,
+    detail.status_msg,
+  ].filter((value) => String(value || '').trim());
+
+  if (statusValues.some((value) => !isPendingStatusText(value))) {
+    return true;
+  }
+
+  return [detail.statusCode, detail.status_code].some((value) => {
+    const numeric = Number(value);
+    return Number.isFinite(numeric) && numeric >= 10;
+  });
+}
+
+function rememberSubmissionId(detail) {
+  const submissionId = detailSubmissionId(detail);
+
+  if (!submissionId) {
+    return;
+  }
+
+  if (!pendingSubmit.submissionId) {
+    pendingSubmit.submissionId = submissionId;
+  }
+}
+
+function handleSubmissionCreated(event) {
+  const detail = event.detail || {};
+
+  if (!pendingSubmitMatches(detail)) {
+    return;
+  }
+
+  rememberSubmissionId(detail);
+}
+
+function handleSubmissionResult(event) {
+  const detail = event.detail || {};
+
+  if (!pendingSubmitMatches(detail)) {
+    return;
+  }
+
+  const submissionId = detailSubmissionId(detail);
+  const isSubmitResponse = detail.sourceType === 'submit-response';
+
+  if (
+    pendingSubmit.submissionId &&
+    submissionId &&
+    submissionId !== pendingSubmit.submissionId
+  ) {
+    return;
+  }
+
+  if (pendingSubmit.submissionId && !submissionId && !isSubmitResponse) {
+    return;
+  }
+
+  if (!pendingSubmit.submissionId && !isSubmitResponse) {
+    return;
+  }
+
+  if (isSubmitResponse) {
+    rememberSubmissionId(detail);
+  }
+
+  if (!isAcceptedResult(detail)) {
+    if (isTerminalResult(detail)) {
+      clearPendingSubmit();
+    }
+
+    return;
+  }
+
+  if (
+    pendingSubmit.syncStarted ||
+    (submissionId && syncedAutoSubmissionIds.has(submissionId))
+  ) {
+    return;
+  }
+
+  pendingSubmit.syncStarted = true;
+
+  if (submissionId) {
+    syncedAutoSubmissionIds.add(submissionId);
+  }
+
+  window.clearTimeout(autoSyncTimer);
+  autoSyncTimer = window.setTimeout(() => {
+    syncAcceptedSolution('auto', detail).finally(clearPendingSubmit);
+  }, 700);
+}
+
 async function syncAcceptedSolution(source, acceptedDetail = {}) {
   if (syncInFlight) {
     return {
@@ -1349,7 +1498,6 @@ async function syncAcceptedSolution(source, acceptedDetail = {}) {
   }
 
   syncInFlight = true;
-  showPageStatus('LeetSync is syncing the accepted solution...', 'pending');
 
   try {
     const submission = await extractSubmission(acceptedDetail);
@@ -1365,15 +1513,12 @@ async function syncAcceptedSolution(source, acceptedDetail = {}) {
     const response = await uploadPreparedSubmission(submission);
 
     lastSyncedFingerprint = fingerprint;
-    showPageStatus(response.message || 'LeetSync upload complete.', 'ok');
 
     return {
       ok: true,
       message: response.message || 'Accepted solution synced.',
     };
   } catch (error) {
-    showPageStatus(error.message || 'LeetSync upload failed.', 'error');
-
     return {
       ok: false,
       error: error.message || 'LeetSync upload failed.',
@@ -1401,22 +1546,18 @@ async function syncCurrentAcceptedSolution(requestId) {
     }
 
     emitManualSyncProgress(requestId, 'Finding latest Accepted submission...');
-    showPageStatus('Finding latest Accepted submission...', 'pending');
     const acceptedDetail = await getLatestAcceptedSubmissionDetail(problemSlug);
 
     emitManualSyncProgress(requestId, 'Preparing solution...');
-    showPageStatus('Preparing accepted solution...', 'pending');
     const submission = await extractSubmission(acceptedDetail, {
       allowEditorFallback: false,
     });
 
     emitManualSyncProgress(requestId, 'Uploading to GitHub...');
-    showPageStatus('Uploading accepted solution to GitHub...', 'pending');
     const response = await uploadPreparedSubmission(submission);
     const message = formatManualSuccessMessage(submission);
 
     lastSyncedFingerprint = submissionFingerprint(submission);
-    showPageStatus(response.message || message, 'ok');
 
     return {
       ok: true,
@@ -1425,8 +1566,6 @@ async function syncCurrentAcceptedSolution(requestId) {
   } catch (error) {
     const message = error.message || 'Manual sync failed.';
 
-    showPageStatus(message, 'error');
-
     return {
       ok: false,
       error: message,
@@ -1434,13 +1573,6 @@ async function syncCurrentAcceptedSolution(requestId) {
   } finally {
     syncInFlight = false;
   }
-}
-
-function queueAutoSync(acceptedDetail = {}) {
-  window.clearTimeout(autoSyncTimer);
-  autoSyncTimer = window.setTimeout(() => {
-    syncAcceptedSolution('auto', acceptedDetail);
-  }, 700);
 }
 
 function recordSubmitIntent(event) {
@@ -1452,60 +1584,14 @@ function recordSubmitIntent(event) {
   const text = control ? control.textContent.replace(/\s+/g, ' ').trim() : '';
 
   if (/^submit$/i.test(text)) {
-    lastSubmitAt = Date.now();
+    startPendingSubmit();
   }
 }
 
-function recordKeyboardSubmit(event) {
-  if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
-    lastSubmitAt = Date.now();
-  }
-}
-
-function hasAcceptedTextInDom() {
-  const nodes = Array.from(
-    document.querySelectorAll('span, div, p, button, [role="status"], [data-e2e-locator]'),
-  );
-
-  return nodes.some((node) => {
-    if (!isVisible(node)) {
-      return false;
-    }
-
-    const text = directText(node) || node.textContent.trim();
-    return text === 'Accepted';
-  });
-}
-
-function scheduleDomAcceptedCheck() {
-  if (!isProblemPage() || Date.now() - lastSubmitAt > RECENT_SUBMIT_WINDOW_MS) {
-    return;
-  }
-
-  window.clearTimeout(scheduleDomAcceptedCheck.timer);
-  scheduleDomAcceptedCheck.timer = window.setTimeout(() => {
-    if (hasAcceptedTextInDom()) {
-      queueAutoSync({});
-    }
-  }, 250);
-}
-
-function startDomAcceptedObserver() {
-  const observer = new MutationObserver(scheduleDomAcceptedCheck);
-  observer.observe(document.documentElement, {
-    characterData: true,
-    childList: true,
-    subtree: true,
-  });
-}
-
-window.addEventListener(ACCEPTED_EVENT, (event) => {
-  lastSubmitAt = Date.now();
-  queueAutoSync(event.detail || {});
-});
+window.addEventListener(SUBMISSION_CREATED_EVENT, handleSubmissionCreated);
+window.addEventListener(SUBMISSION_RESULT_EVENT, handleSubmissionResult);
 
 document.addEventListener('click', recordSubmitIntent, true);
-document.addEventListener('keydown', recordKeyboardSubmit, true);
 
 extensionApi.runtime.onMessage.addListener((message) => {
   if (!message || message.type !== 'LEETSYNC_SYNC_CURRENT_ACCEPTED') {
@@ -1516,4 +1602,3 @@ extensionApi.runtime.onMessage.addListener((message) => {
 });
 
 installPageBridge();
-startDomAcceptedObserver();

@@ -11,9 +11,9 @@ GitHub, Mozilla, Qasim Wani, or the original LeetHub maintainers.
 ## Overview
 
 LeetSync Fine-Grained - Personalized watches LeetCode problem pages in Firefox.
-When an accepted solution is detected, it prepares solution metadata and asks the
-background extension context to create or update files in one configured GitHub
-repository.
+When the user clicks Submit and that newly submitted solution is Accepted, it
+prepares solution metadata and asks the background extension context to create
+or update files in one configured GitHub repository.
 
 The extension also includes a manual fallback, **Sync Current Accepted
 Solution**, for syncing the latest historical Accepted submission for the
@@ -34,7 +34,8 @@ project is focused on a narrower privacy and security model:
 
 ## Features
 
-- Automatic sync when a LeetCode submission is detected as Accepted.
+- Automatic sync only after the user clicks Submit and that new LeetCode
+  submission is Accepted.
 - Manual **Sync Current Accepted Solution** button for previously solved
   problems.
 - GitHub Fine-Grained PAT configuration in the popup/options UI.
