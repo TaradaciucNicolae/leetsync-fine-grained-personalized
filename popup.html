@@ -4,18 +4,18 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="css/popup.css" />
-    <title>LeetSync Fine-Grained - Personalized</title>
+    <title>SafeLeetSync</title>
   </head>
   <body>
     <main class="app-shell">
       <header class="masthead">
-        <h1>LeetSync Fine-Grained - Personalized</h1>
-        <p>Fine-Grained PAT LeetCode to GitHub sync</p>
+        <h1>SafeLeetSync</h1>
+        <p>Fine-Grained PAT sync for LeetCode</p>
       </header>
 
       <form id="config-form" autocomplete="off">
         <label for="username">
-          GitHub username
+          GitHub owner
           <input
             id="username"
             name="username"
@@ -27,7 +27,7 @@
         </label>
 
         <label for="repository">
-          Repository name
+          Repository
           <input
             id="repository"
             name="repository"
@@ -40,14 +40,14 @@
         </label>
 
         <label for="token">
-          Fine-Grained Personal Access Token
+          Fine-Grained PAT
           <input
             id="token"
             name="token"
             type="password"
             autocomplete="off"
             spellcheck="false"
-            placeholder="Paste token to save or replace"
+            placeholder="Paste your Fine-Grained PAT"
           />
         </label>
 
@@ -64,7 +64,7 @@
       </section>
 
       <button id="manual-sync-button" type="button">
-        Sync Current Accepted Solution
+        Sync Latest Accepted Solution
       </button>
     </main>
 

@@ -16,7 +16,7 @@ repository.
   logs containing secrets, or real user tokens.
 - Keep host permissions minimal and document every new permission.
 - Do not add analytics or telemetry without an explicit maintainer decision.
-- Keep manual historical Accepted sync and automatic Submit -> Accepted sync on
+- Keep manual latest Accepted sync and automatic Submit -> Accepted sync on
   the same GitHub upload pipeline.
 - Preserve the MIT license and upstream LeetHub attribution.
 

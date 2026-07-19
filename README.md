@@ -1,27 +1,26 @@
-# LeetSync Fine-Grained - Personalized
+# SafeLeetSync <img src="assets/icon-48.png" alt="SafeLeetSync icon" width="32" height="32">
 
-Firefox extension that syncs accepted LeetCode solutions to one configured
-GitHub repository using a GitHub Fine-Grained Personal Access Token.
+Firefox extension that syncs accepted LeetCode solutions to a configured GitHub
+repository and authenticates with a Fine-Grained Personal Access Token.
 
-This is an unofficial project derived from the open-source LeetHub project. It
-is not affiliated with or endorsed by LeetCode, GitHub, Mozilla, Qasim Wani, or
-the original LeetHub maintainers.
+SafeLeetSync is maintained by KreuZz and derived from the open-source LeetHub
+project. It is not affiliated with or endorsed by LeetCode, GitHub, Mozilla,
+Qasim Wani, or the original LeetHub maintainers.
 
 ## What It Does
 
-LeetSync Fine-Grained - Personalized runs on LeetCode problem pages in Firefox.
-After the user clicks Submit, it watches that submitted solution. If LeetCode
-reports Accepted, the extension sends the solution and problem metadata to the
-background script, which creates or updates files in the configured GitHub
-repository.
+SafeLeetSync runs on LeetCode problem pages in Firefox. After the user clicks
+Submit, it watches that submitted solution. If LeetCode reports Accepted, the
+extension sends the solution and problem metadata to the background script,
+which creates or updates files in the configured GitHub repository.
 
-The popup also provides **Sync Current Accepted Solution** for the latest
-historical Accepted submission on the currently open LeetCode problem.
+The popup also provides **Sync Latest Accepted Solution** for the latest
+Accepted submission on the currently open LeetCode problem.
 
 ## Features
 
 - Automatic Submit -> Accepted sync.
-- Manual historical Accepted sync from the popup.
+- Manual latest Accepted sync from the popup.
 - GitHub Fine-Grained PAT authentication.
 - Single saved GitHub owner and repository.
 - Create/update behavior for problem `README.md` and `solution.ext` files.
@@ -83,9 +82,9 @@ installation path.
 
 Open the extension popup and enter:
 
-- GitHub username or organization
-- GitHub repository name
-- Fine-Grained Personal Access Token
+- GitHub owner
+- Repository
+- Fine-Grained PAT
 
 Click **Save configuration**, then **Test GitHub Connection**. The token field
 is a password input, and a saved token is not shown again in plaintext.
@@ -98,11 +97,11 @@ Automatic Submit -> Accepted sync:
 2. Submit a solution.
 3. When that submitted solution is Accepted, the extension uploads it.
 
-Manual historical Accepted sync:
+Manual latest Accepted sync:
 
 1. Open a solved LeetCode problem page while logged in.
 2. Open the extension popup.
-3. Click **Sync Current Accepted Solution**.
+3. Click **Sync Latest Accepted Solution**.
 4. The extension retrieves the latest Accepted submission for that problem and
    uses the same GitHub upload pipeline as automatic sync.
 
@@ -160,24 +159,24 @@ vulnerability reporting.
 - LeetCode is not a stable browser-extension integration API. Changes to
   LeetCode page behavior, GraphQL fields, or submission polling may require
   extension updates.
-- Manual historical Accepted sync requires the user to be logged in to LeetCode
-  in the current Firefox profile.
+- Manual latest Accepted sync requires the user to be logged in to LeetCode in
+  the current Firefox profile.
 - The extension has not been tested across every LeetCode language and UI
   variant.
-- The icon artwork is inherited from upstream LeetHub and may be replaced before
-  broader distribution.
+- Icon assets are project-specific SafeLeetSync artwork.
 
 ## Project Status
 
 This repository is prepared for public GitHub release and Mozilla AMO unlisted
-self-distribution review. The extension version is defined in `manifest.json`.
+self-distribution review. The recommended public repository name is
+`safeleetsync-firefox`. The extension version is defined in `manifest.json`.
 
 ## Credits
 
-This project is derived from the open-source LeetHub project by Qasim Wani and
-has been significantly modified for Firefox usage, Fine-Grained PAT
-authentication, single-repository syncing, removal of broad GitHub OAuth
-access, and manual historical Accepted solution sync.
+SafeLeetSync is maintained by KreuZz. It is derived from the open-source
+LeetHub project by Qasim Wani and has been significantly modified for Firefox
+usage, Fine-Grained PAT authentication, single-repository syncing, removal of
+broad GitHub OAuth access, and manual latest Accepted solution sync.
 
 This attribution does not imply endorsement by Qasim Wani or the LeetHub
 maintainers.

@@ -1,6 +1,6 @@
 ---
 name: Bug report
-about: Report a reproducible problem with LeetSync Fine-Grained - Personalized
+about: Report a reproducible problem with SafeLeetSync
 title: "[Bug]: "
 labels: bug
 assignees: ""
@@ -13,7 +13,7 @@ Describe the problem.
 ## Sync Mode
 
 - Automatic Submit -> Accepted sync
-- Manual historical Accepted sync
+- Manual latest Accepted sync
 - Configuration, installation, or other
 
 ## Steps to Reproduce

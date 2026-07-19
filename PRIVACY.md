@@ -1,8 +1,8 @@
 # Privacy
 
-LeetSync Fine-Grained - Personalized is a local Firefox extension. It does not
-use analytics, telemetry, advertising, tracking scripts, a project-operated
-backend, or unrelated third-party data transmission.
+SafeLeetSync is a local Firefox extension. It does not use analytics,
+telemetry, advertising, tracking scripts, a project-operated backend, or
+unrelated third-party data transmission.
 
 Synchronization sends selected data to LeetCode and GitHub as described below.
 
@@ -11,7 +11,7 @@ Synchronization sends selected data to LeetCode and GitHub as described below.
 The extension stores these values in Firefox extension local storage
 (`browser.storage.local`):
 
-- `leetsync_config.username`: configured GitHub username or organization
+- `leetsync_config.username`: configured GitHub owner
 - `leetsync_config.repository`: configured GitHub repository name
 - `leetsync_config.token`: GitHub Fine-Grained Personal Access Token
 - `leetsync_last_upload`: latest upload status shown in the popup

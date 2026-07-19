@@ -1,6 +1,6 @@
 ---
 name: Feature request
-about: Suggest an improvement for LeetSync Fine-Grained - Personalized
+about: Suggest an improvement for SafeLeetSync
 title: "[Feature]: "
 labels: enhancement
 assignees: ""

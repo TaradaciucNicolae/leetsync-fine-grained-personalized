@@ -1,8 +1,9 @@
 {
-  "name": "leetsync-fine-grained-personalized",
-  "version": "0.1.0",
+  "name": "safeleetsync-firefox",
+  "version": "0.1.1",
   "private": true,
-  "description": "Firefox extension for syncing accepted LeetCode solutions to one configured GitHub repository with a Fine-Grained PAT.",
+  "description": "Syncs accepted LeetCode solutions to a configured GitHub repository and authenticates with a Fine-Grained PAT.",
+  "author": "KreuZz",
   "scripts": {
     "setup": "npm i",
     "format": "prettier --write **/*.{js,jsx,ts,tsx,css,html}",

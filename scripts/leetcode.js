@@ -1493,7 +1493,7 @@ async function syncAcceptedSolution(source, acceptedDetail = {}) {
   if (syncInFlight) {
     return {
       ok: false,
-      error: 'A LeetSync upload is already running.',
+      error: 'A SafeLeetSync upload is already running.',
     };
   }
 
@@ -1521,7 +1521,7 @@ async function syncAcceptedSolution(source, acceptedDetail = {}) {
   } catch (error) {
     return {
       ok: false,
-      error: error.message || 'LeetSync upload failed.',
+      error: error.message || 'SafeLeetSync upload failed.',
     };
   } finally {
     syncInFlight = false;
@@ -1532,7 +1532,7 @@ async function syncCurrentAcceptedSolution(requestId) {
   if (syncInFlight) {
     return {
       ok: false,
-      error: 'A LeetSync upload is already running.',
+      error: 'A SafeLeetSync upload is already running.',
     };
   }
 

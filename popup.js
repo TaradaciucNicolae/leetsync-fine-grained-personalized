@@ -79,8 +79,8 @@ async function loadState() {
   repositoryInput.value = storedConfig.repository || 'leetcode-solutions';
   tokenInput.value = '';
   tokenInput.placeholder = storedConfig.hasToken
-    ? 'Stored token will be kept if left blank'
-    : 'Paste token to save or replace';
+    ? 'Leave empty to keep your saved token'
+    : 'Paste your Fine-Grained PAT';
 
   repoLink.textContent = '';
   if (storedConfig.username && storedConfig.repository) {
@@ -101,7 +101,7 @@ async function loadState() {
   if (storedConfig.hasToken && storedConfig.username && storedConfig.repository) {
     setStatus('Configuration saved locally.', 'ok');
   } else {
-    setStatus('Add your GitHub username, repository, and Fine-Grained token.', 'warn');
+    setStatus('Add your GitHub owner, repository, and Fine-Grained PAT.', 'warn');
   }
 }
 

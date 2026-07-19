@@ -133,7 +133,7 @@ function normalizeConfig(input, existingConfig = {}) {
   const token = input.token ? String(input.token).trim() : existingConfig.token;
 
   if (!isValidOwner(username)) {
-    throw new Error('Enter a valid GitHub username or organization.');
+    throw new Error('Enter a valid GitHub owner.');
   }
 
   if (!isValidRepository(repository)) {
