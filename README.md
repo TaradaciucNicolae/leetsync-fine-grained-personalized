@@ -1,4 +1,4 @@
-# SafeLeetSync <img src="assets/icon-48.png" alt="SafeLeetSync icon" width="32" height="32">
+# <img src="assets/icon-48.png" alt="SafeLeetSync icon" width="32" height="32"> SafeLeetSync
 
 Firefox extension that syncs accepted LeetCode solutions to a configured GitHub
 repository and authenticates with a Fine-Grained Personal Access Token.
