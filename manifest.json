@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "SafeLeetSync",
   "description": "Syncs accepted LeetCode solutions to a configured GitHub repository and authenticates with a Fine-Grained PAT.",
-  "version": "0.1.1",
+  "version": "0.1.0",
   "author": "KreuZz",
   "browser_specific_settings": {
     "gecko": {
