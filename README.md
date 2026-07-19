@@ -3,9 +3,9 @@
 Firefox extension that syncs accepted LeetCode solutions to a configured GitHub
 repository and authenticates with a Fine-Grained Personal Access Token.
 
-SafeLeetSync is maintained by KreuZz and derived from the open-source LeetHub
-project. It is not affiliated with or endorsed by LeetCode, GitHub, Mozilla,
-Qasim Wani, or the original LeetHub maintainers.
+SafeLeetSync is maintained by KreuZz (Taradaciuc Nicolae) and derived from the
+open-source LeetHub project. It is not affiliated with or endorsed by LeetCode,
+GitHub, Mozilla, Qasim Wani, or the original LeetHub maintainers.
 
 ## What It Does
 
@@ -173,10 +173,11 @@ self-distribution review. The recommended public repository name is
 
 ## Credits
 
-SafeLeetSync is maintained by KreuZz. It is derived from the open-source
-LeetHub project by Qasim Wani and has been significantly modified for Firefox
-usage, Fine-Grained PAT authentication, single-repository syncing, removal of
-broad GitHub OAuth access, and manual latest Accepted solution sync.
+SafeLeetSync is maintained by KreuZz (Taradaciuc Nicolae). It is derived from
+the open-source LeetHub project by Qasim Wani and has been significantly
+modified for Firefox usage, Fine-Grained PAT authentication, single-repository
+syncing, removal of broad GitHub OAuth access, and manual latest Accepted
+solution sync.
 
 This attribution does not imply endorsement by Qasim Wani or the LeetHub
 maintainers.
