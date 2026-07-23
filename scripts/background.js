@@ -316,7 +316,7 @@ function buildCommitMessage(submission) {
   const language = normalizeLanguageName(submission.language, submission.langSlug);
   const prefix = [performance, language].filter(Boolean).join(' - ');
 
-  return prefix ? `${prefix} - LeetHub Auto Commit` : 'LeetHub Auto Commit';
+  return prefix ? `${prefix} - SafeLeetSync Auto Commit` : 'SafeLeetSync Auto Commit';
 }
 
 function encodeGitHubPath(path) {
