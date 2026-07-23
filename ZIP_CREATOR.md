@@ -3,6 +3,7 @@
 ## Terminal Commands
 
 ```powershell
+
 Set-Location "D:\My Projects\LeetHub Personalized\leethub-personal"
 
 $mainVersion = (Get-Content .\manifest.json -Raw | ConvertFrom-Json).version
@@ -23,12 +24,47 @@ if (Test-Path $zipPath) {
   Remove-Item $zipPath -Force
 }
 
-Compress-Archive -Path .\amo-package\* -DestinationPath $zipPath -Force
+Add-Type -AssemblyName System.IO.Compression
+Add-Type -AssemblyName System.IO.Compression.FileSystem
+
+$sourcePath = (Resolve-Path .\amo-package).Path
+$zipFile = [System.IO.Compression.ZipFile]::Open(
+  (Join-Path (Get-Location) $zipPath),
+  [System.IO.Compression.ZipArchiveMode]::Create
+)
+
+try {
+  Get-ChildItem -Path $sourcePath -Recurse -File | ForEach-Object {
+    $relativePath = $_.FullName.Substring($sourcePath.Length).TrimStart([char]92)
+    $zipEntryPath = $relativePath.Replace([char]92, '/')
+    $entry = $zipFile.CreateEntry($zipEntryPath)
+    $inputStream = [System.IO.File]::OpenRead($_.FullName)
+
+    try {
+      $outputStream = $entry.Open()
+      try {
+        $inputStream.CopyTo($outputStream)
+      } finally {
+        $outputStream.Dispose()
+      }
+    } finally {
+      $inputStream.Dispose()
+    }
+  }
+} finally {
+  $zipFile.Dispose()
+}
+
 Write-Host "Created: $zipPath"
 
 $archive = [System.IO.Compression.ZipFile]::OpenRead((Resolve-Path $zipPath))
-$entries = @($archive.Entries | ForEach-Object { $_.FullName -replace '\\', '/' })
+$entries = @($archive.Entries | ForEach-Object { $_.FullName })
 $archive.Dispose()
+
+$invalidEntries = @($entries | Where-Object { $_.Contains([char]92) })
+if ($invalidEntries.Count -gt 0) {
+  throw "ZIP contains Windows path separators: $($invalidEntries -join ', ')"
+}
 
 $requiredFiles = @(
   'manifest.json',
@@ -45,6 +81,7 @@ if ($missingFiles.Count -gt 0) {
 }
 
 Write-Host "ZIP validation passed: $zipPath"
+
 ```
 
 A successful run prints a variable archive name:
